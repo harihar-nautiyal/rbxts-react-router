@@ -1,5 +1,5 @@
 {
-  "name": "@rbxtsx/react-router",
+  "name": "@rbxts/react-router",
   "version": "1.0.1",
   "main": "out/init.lua",
   "types": "out/index.d.ts",
