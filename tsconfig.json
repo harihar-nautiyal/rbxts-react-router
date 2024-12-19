@@ -15,13 +15,21 @@
 		"moduleDetection": "force",
 		"strict": true,
 		"target": "ESNext",
-		"typeRoots": ["node_modules/@rbxts"],
+		"typeRoots": [
+			"node_modules/@rbxts",
+			"node_modules/@rbxtsx", 
+			"node_modules/@types"
+		],
 
 		// configurable
 		"rootDir": "src",
 		"outDir": "out",
 		"incremental": true,
 		"tsBuildInfoFile": "out/tsconfig.tsbuildinfo",
-		"declaration": true
-	}
+		"declaration": true,
+		"declarationDir": "out",     // Added to specify where .d.ts files go
+		"skipLibCheck": true         // Added to avoid issues with external type definitions
+	},
+	"include": ["src/**/*"],        // Added to explicitly specify source files
+	"exclude": ["node_modules", "out"]  // Added to exclude unnecessary directories
 }

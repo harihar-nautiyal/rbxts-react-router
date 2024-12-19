@@ -1,7 +1,8 @@
 {
-  "name": "@rbxts/rbxts-react-router",
-  "version": "1.0.0",
+  "name": "@rbxtsx/react-router",
+  "version": "1.0.1",
   "main": "out/init.lua",
+  "types": "out/index.d.ts",
   "scripts": {
     "build": "rbxtsc",
     "watch": "rbxtsc -w",
@@ -15,9 +16,8 @@
     "roblox"
   ],
   "author": "Harihar Nautiyal",
-  "license": "ISC",
+  "license": "MIT",
   "description": "React Router implementation for Roblox TypeScript",
-  "types": "out/index.d.ts",
   "files": [
     "out",
     "!**/*.tsbuildinfo"
@@ -31,7 +31,8 @@
   },
   "homepage": "https://github.com/harihar-nautiyal/rbxts-react-router#readme",
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
     "@rbxts/compiler-types": "^3.0.0-types.0",
@@ -41,5 +42,10 @@
   },
   "dependencies": {
     "@rbxts/react": "^17.2.3"
+  },
+  "typesVersions": {
+    "*": {
+      "*": ["out/index.d.ts"]
+    }
   }
 }
