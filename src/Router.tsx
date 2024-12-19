@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useState, useCallback } from '@rbxts/react';
+import React, {
+    Children,
+    createContext,
+    PropsWithChildren,
+    ReactChildren,
+    useCallback,
+    useContext,
+    useState,
+} from "@rbxts/react";
 
 interface RouterContextType {
     currentPath: string;
@@ -6,18 +14,15 @@ interface RouterContextType {
     params: Map<string, string>;
 }
 
-interface RouterProviderProps {
-    children: React.ReactNode;
+type RouterProviderProps = PropsWithChildren<{
     initialPath?: string;
-}
+}>;
+
+type RoutesProps = PropsWithChildren<{}>;
 
 interface RouteProps {
     path: string;
     component: React.ComponentType;
-}
-
-interface RoutesProps {
-    children: React.ReactNode;
 }
 
 interface LinkProps {
@@ -26,15 +31,13 @@ interface LinkProps {
 }
 
 const RouterContext = createContext<RouterContextType>({
-    currentPath: '/',
+    currentPath: "/",
     navigate: () => {},
     params: new Map(),
 });
-
-export const RouterProvider: React.FC<RouterProviderProps> = ({ 
-    children, 
-    initialPath = '/' 
-}) => {
+export const RouterProvider = (
+    { children, initialPath = "/" }: RouterProviderProps,
+) => {
     const [currentPath, setCurrentPath] = useState(initialPath);
     const [params] = useState(new Map<string, string>());
 
@@ -49,13 +52,9 @@ export const RouterProvider: React.FC<RouterProviderProps> = ({
     );
 };
 
-export const Routes: React.FC<RoutesProps> = ({ children }) => {
+export const Routes = ({ children }: RoutesProps) => {
     return (
-        <frame
-            BackgroundTransparency={1}
-            Size={new UDim2(1, 0, 1, 0)}
-            Position={new UDim2(0, 0, 0, 0)}
-        >
+        <frame BackgroundTransparency={1} Size={new UDim2(1, 0, 1, 0)}>
             {children}
         </frame>
     );
@@ -63,26 +62,33 @@ export const Routes: React.FC<RoutesProps> = ({ children }) => {
 
 export const Route: React.FC<RouteProps> = ({ path, component: Component }) => {
     const { currentPath } = useRouter();
-    
-    const matchRoute = (routePath: string, currentPath: string): { isMatch: boolean; params: Map<string, string> } => {
-        const routeParts = string.split(routePath, "/").filter((part) => part !== "");
-        const currentParts = string.split(currentPath, "/").filter((part) => part !== "");
-        
+
+    const matchRoute = (
+        routePath: string,
+        currentPath: string,
+    ): { isMatch: boolean; params: Map<string, string> } => {
+        const routeParts = string.split(routePath, "/").filter((part) =>
+            part !== ""
+        );
+        const currentParts = string.split(currentPath, "/").filter((part) =>
+            part !== ""
+        );
+
         if (routeParts.size() !== currentParts.size()) {
             return { isMatch: false, params: new Map() };
         }
 
         const params = new Map<string, string>();
-        
+
         const isMatch = routeParts.every((routePart, index) => {
             const currentPart = currentParts[index];
-            
+
             if (string.sub(routePart, 1, 1) === ":") {
                 const paramName = string.sub(routePart, 2);
                 params.set(paramName, currentPart);
                 return true;
             }
-            
+
             return routePart === currentPart;
         });
 
@@ -90,15 +96,15 @@ export const Route: React.FC<RouteProps> = ({ path, component: Component }) => {
     };
 
     const { isMatch } = matchRoute(path, currentPath);
-    
+
     return isMatch ? <Component /> : undefined;
 };
 
 export const Link: React.FC<LinkProps> = ({ to, children }) => {
     const { navigate } = useRouter();
-    
+
     const buttonText = typeIs(children, "string") ? children : "Link";
-    
+
     return (
         <textbutton
             AutomaticSize={Enum.AutomaticSize.XY}
