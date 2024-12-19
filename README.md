@@ -1,16 +1,43 @@
-# @rbxts/react-router
+# @rbxtsx/react-router
 
 A lightweight and type-safe React Router implementation specifically designed for Roblox TypeScript (@rbxts/react).
 
-## Add to this to your tsconfig.json
+## Important Configuration
 
+### 1. Update tsconfig.json
+Add `@rbxtsx` to your typeRoots:
 ```json
 {
   "compilerOptions": {
     "typeRoots": [
       "node_modules/@rbxts",
-      "node_modules/@rbxtsx", // Add rbxtsx to type roots
+      "node_modules/@rbxtsx",  // Add this line
+      "node_modules/@types"
     ]
+  }
+}
+```
+
+2. Update default.project.json
+
+Add the `@rbxtsx` scope to your Rojo configuration:
+
+```json
+{
+  "ReplicatedStorage": {
+    "$className": "ReplicatedStorage",
+    "rbxts_include": {
+      "$path": "include",
+      "node_modules": {
+        "$className": "Folder",
+        "@rbxts": {
+          "$path": "node_modules/@rbxts"
+        },
+        "@rbxtsx": {           // Add this block
+          "$path": "node_modules/@rbxtsx"
+        }
+      }
+    }
   }
 }
 
