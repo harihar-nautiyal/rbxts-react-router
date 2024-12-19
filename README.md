@@ -2,6 +2,20 @@
 
 A lightweight and type-safe React Router implementation specifically designed for Roblox TypeScript (@rbxts/react).
 
+## Add to this to your tsconfig.json
+
+```json
+{
+  "compilerOptions": {
+    "typeRoots": [
+      "node_modules/@rbxts",
+      "node_modules/@rbxtsx", // Add rbxtsx to type roots
+    ]
+  }
+}
+
+```
+
 ## Installation
 
 ```bash
