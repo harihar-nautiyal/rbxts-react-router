@@ -5,6 +5,46 @@
 
 **Author:** Harihar Nautiyal
 
+**Important Configuration**
+
+1. Update tsconfig.json
+Add @rbxtsx to your typeRoots:
+
+```json
+{
+  "compilerOptions": {
+    "typeRoots": [
+      "node_modules/@rbxts",
+      "node_modules/@rbxtsx",  // Add this line
+      "node_modules/@types"
+    ]
+  }
+}
+```
+
+Update default.project.json
+Add the @rbxtsx scope to your Rojo configuration:
+
+```json
+{
+  "ReplicatedStorage": {
+    "$className": "ReplicatedStorage",
+    "rbxts_include": {
+      "$path": "include",
+      "node_modules": {
+        "$className": "Folder",
+        "@rbxts": {
+          "$path": "node_modules/@rbxts"
+        },
+        "@rbxtsx": {           // Add this block
+          "$path": "node_modules/@rbxtsx"
+        }
+      }
+    }
+  }
+}
+```
+
 **Installation:**
 
 ```bash
