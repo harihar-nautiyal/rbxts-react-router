@@ -1,256 +1,116 @@
 # @rbxtsx/react-router
+## A React-like Router for Roblox with Transitions
 
-A lightweight and type-safe React Router implementation specifically designed for Roblox TypeScript (@rbxts/react).
+**Welcome!** This is the official documentation for the `@rbxtsx/react-router` package. This package provides a routing solution for your Roblox experiences built with Roblox's TypeScript framework, RbxTs. It allows you to manage navigation between different UI components based on URL paths and includes support for animated transitions.
 
-## Important Configuration
+**Author:** Harihar Nautiyal
 
-### 1. Update tsconfig.json
-Add `@rbxtsx` to your typeRoots:
-```json
-{
-  "compilerOptions": {
-    "typeRoots": [
-      "node_modules/@rbxts",
-      "node_modules/@rbxtsx",  // Add this line
-      "node_modules/@types"
-    ]
-  }
-}
-```
-
-2. Update default.project.json
-
-Add the `@rbxtsx` scope to your Rojo configuration:
-
-```json
-{
-  "ReplicatedStorage": {
-    "$className": "ReplicatedStorage",
-    "rbxts_include": {
-      "$path": "include",
-      "node_modules": {
-        "$className": "Folder",
-        "@rbxts": {
-          "$path": "node_modules/@rbxts"
-        },
-        "@rbxtsx": {           // Add this block
-          "$path": "node_modules/@rbxtsx"
-        }
-      }
-    }
-  }
-}
-
-```
-
-## Installation
+**Installation:**
 
 ```bash
 npm install @rbxtsx/react-router
 ```
 
-## Features
+**Features:**
 
-- 🎯 Type-safe routing
-- 🚀 Simple and intuitive API
-- 🔄 Dynamic route matching
-- 🎮 Optimized for Roblox
-- ⚡ Lightweight implementation
-- 🛠️ Built-in navigation hooks
+*   **Navigation:** Define routes and navigate between them using paths.
+*   **Route Matching:** Match URLs to specific components based on path patterns.
+*   **Parameters:** Capture dynamic segments in paths using colon syntax (`:paramName`).
+*   **Transitions:** Apply smooth animations when switching between routes. You can choose from various built-in transition types or customize your own.
+*   **Context API:** Access routing information like the current path and navigation function from any component in your application using `useRouter` and `useParams` hooks.
 
-## Quick Start
+**Getting Started:**
 
-```typescript
-import { RouterProvider, Routes, Route, Link } from '@rbxts/react-router';
+1.  **Import the necessary components:**
 
-// Your components
-const Home: React.FC = () => (
-    <frame>
-        <textlabel Text="Home Page" />
-        <Link to="/profile">Go to Profile</Link>
-    </frame>
-);
+```jsx
+import { RouterProvider, Routes, Route, Link, useRouter, useParams } from "@rbxtsx/react-router";
+```
 
-const Profile: React.FC = () => (
-    <frame>
-        <textlabel Text="Profile Page" />
-        <Link to="/">Back to Home</Link>
-    </frame>
-);
+2.  **Wrap your application with `RouterProvider`:**
 
-// App setup
-const App: React.FC = () => (
-    <RouterProvider>
-        <Routes>
-            <Route path="/" component={Home} />
-            <Route path="/profile" component={Profile} />
-        </Routes>
+This component provides the context for routing and manages the current path. You can also set default transition properties here.
+
+```jsx
+function App() {
+  return (
+    <RouterProvider transition="slide-left" transitionDuration={0.5}> {/* Default transition for all routes */}
+      {/* Your application components here */}
     </RouterProvider>
-);
-```
-
-## API Reference
-
-### `<RouterProvider>`
-The main router component that provides routing context.
-
-```typescript
-interface RouterProviderProps {
-    children: React.ReactNode;
-    initialPath?: string;
+  );
 }
-
-<RouterProvider initialPath="/">
-    {/* Your routes */}
-</RouterProvider>
 ```
 
-### `<Routes>`
-Container for Route components.
+3.  **Define routes with `Routes`:** This component acts as a container for your routes. You can also override the default transition properties from the `RouterProvider`.
 
-```typescript
-<Routes>
-    <Route path="/" component={Home} />
-    <Route path="/profile" component={Profile} />
+```jsx
+<Routes transition="fade" transitionDuration={0.3}> {/* Overrides default transition for routes within */}
+  <Route path="/" component={HomePage} />
+  <Route path="/about" component={AboutPage} />
+  <Route path="/products/:productId" component={ProductPage} />
 </Routes>
 ```
 
-### `<Route>`
-Defines a route with a path and component.
+4.  **Define individual routes with `Route`:**
 
-```typescript
-interface RouteProps {
-    path: string;
-    component: React.ComponentType;
+*   `path`: The URL pattern for this route.
+*   `component`: The React component to render for this route.
+*   `transition` (Optional): Overrides the parent `Routes` or `RouterProvider` transition.
+*   `transitionDuration` (Optional): Overrides the parent `Routes` or `RouterProvider` transition duration.
+
+5.  **Create links with `Link`:**
+
+This component allows users to navigate between routes.
+
+```jsx
+<Link to="/">Home</Link>
+<Link to="/about">About</Link>
+```
+
+6.  **Access route information:**
+
+*   `useRouter` hook: Returns the current routing context object.
+*   `useParams` hook: Returns a map of captured parameters from the current route.
+
+**Transitions:**
+
+The `@rbxtsx/react-router` package provides several built-in transition types:
+
+*   `fade`: Fades the new component in and the old component out.
+*   `slide-left`: Slides the new component in from the left and the old component out to the left.
+*   `slide-right`: Slides the new component in from the right and the old component out to the right.
+*   `slide-up`: Slides the new component in from the bottom and the old component out to the bottom.
+*   `slide-down`: Slides the new component in from the top and the old component out to the top.
+
+You can set the transition type and duration on the `RouterProvider`, `Routes`, or individual `Route` components. The order of precedence is `Route` > `Routes` > `RouterProvider`.
+
+**Example with Transitions:**
+
+```jsx
+function App() {
+  return (
+    <RouterProvider transition="fade" transitionDuration={0.5}>
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/about">About</Link>
+        <Link to="/products/123">Product 123</Link>
+      </nav>
+      <Routes>
+        <Route path="/" component={HomePage} />
+        <Route path="/about" component={AboutPage} transition="slide-right" /> {/* Overrides default to slide-right */}
+        <Route path="/products/:productId" component={ProductPage} />
+      </Routes>
+    </RouterProvider>
+  );
 }
-
-<Route path="/profile" component={Profile} />
+// ... (HomePage, AboutPage, ProductPage components remain the same)
 ```
 
-### `<Link>`
-Navigation component for route transitions.
+In this example:
 
-```typescript
-interface LinkProps {
-    to: string;
-    children: React.ReactNode;
-}
+*   All routes will initially have a `fade` transition with a duration of 0.5 seconds.
+*   The `/about` route will override this to use a `slide-right` transition, while keeping the 0.5-second duration.
 
-<Link to="/profile">Go to Profile</Link>
-```
+**Additional Notes:**
 
-### `useRouter` Hook
-Hook for programmatic navigation and accessing router context.
-
-```typescript
-const MyComponent: React.FC = () => {
-    const { navigate, currentPath } = useRouter();
-
-    return (
-        <textbutton 
-            Text="Navigate"
-            Event={{
-                MouseButton1Click: () => navigate("/profile")
-            }}
-        />
-    );
-};
-```
-
-## Examples
-
-### Basic Navigation
-```typescript
-const Navigation: React.FC = () => {
-    const { navigate } = useRouter();
-
-    return (
-        <frame>
-            <Link to="/">Home</Link>
-            <Link to="/profile">Profile</Link>
-            <textbutton 
-                Text="Dashboard"
-                Event={{
-                    MouseButton1Click: () => navigate("/dashboard")
-                }}
-            />
-        </frame>
-    );
-};
-```
-
-### Programmatic Navigation
-```typescript
-const GameComponent: React.FC = () => {
-    const { navigate } = useRouter();
-
-    const handleGameEnd = () => {
-        // Do something
-        navigate("/results");
-    };
-
-    return (
-        <frame>
-            <textbutton 
-                Text="End Game"
-                Event={{
-                    MouseButton1Click: handleGameEnd
-                }}
-            />
-        </frame>
-    );
-};
-```
-
-## Best Practices
-
-1. Keep your routes organized in a central location
-2. Use consistent path naming conventions
-3. Handle navigation errors gracefully
-4. Clean up any subscriptions or events in your components
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## License
-
-MIT © [Harihar Nautiyal](https://github.com/harihar-nautiyal)
-
-## Author
-
-**Harihar Nautiyal**
-- GitHub: [@harihar-nautiyal](https://github.com/harihar-nautiyal)
-- npm: [@rbxts/react-router](https://www.npmjs.com/package/@rbxts/react-router)
-
-## Changelog
-
-### 1.0.0 (2024-12-18)
-- Initial release
-- Basic routing functionality
-- Navigation hooks
-- Link component
-- Route matching
-
-## Support
-
-If you found this project useful, please consider giving it a ⭐️ on GitHub!
-
-For issues and feature requests, please [create an issue](https://github.com/harihar-nautiyal/rbxts-react-router/issues) on GitHub.
-```
-
-This README provides:
-1. Clear installation instructions
-2. Comprehensive API documentation
-3. Multiple usage examples
-4. Best practices
-5. Contribution guidelines
-6. Proper attribution and licensing
-7. Support information
-8. Changelog
+*   This package utilizes Roblox-specific components like `frame`, `textbutton`, and `TweenService`. Ensure you're familiar with these components for proper usage within Roblox.
