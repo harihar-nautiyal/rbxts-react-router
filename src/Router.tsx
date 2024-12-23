@@ -6,10 +6,19 @@ import React, {
     useContext,
     useState,
     useEffect,
+    ReactNode,
+    ComponentType,
 } from "@rbxts/react";
 
-
 type TransitionType = "fade" | "slide-left" | "slide-right" | "slide-up" | "slide-down";
+
+// Define a type for the properties you'll be using in your transitions
+interface TransitionStyle {
+    BackgroundTransparency?: number;
+    ImageTransparency?: number; // If you're using images
+    TextTransparency?: number; // If you're animating text
+    Position?: UDim2;
+}
 
 interface RouterContextType {
     currentPath: string;
@@ -21,58 +30,60 @@ interface RouterProviderProps extends PropsWithChildren<{
     initialPath?: string;
     transition?: TransitionType;
     transitionDuration?: number;
-}> {}
+}> { }
 
 interface RoutesProps extends PropsWithChildren<{
     transition?: TransitionType;
     transitionDuration?: number;
-}> {}
+}> { }
 
 interface RouteProps {
     path: string;
-    component: React.ComponentType;
+    component: ComponentType;
     transition?: TransitionType;
     transitionDuration?: number;
 }
 
 interface LinkProps {
     to: string;
-    children: React.ReactNode;
+    children: ReactNode;
 }
 
-// Transition configurations
-const transitionConfigs = {
+// Transition configurations with explicit types
+const transitionConfigs: Record<TransitionType, {
+    initial?: TransitionStyle;
+    animate: TransitionStyle;
+    exit: TransitionStyle;
+}> = {
     "fade": {
-        initial: { BackgroundTransparency: 1, Position: UDim2.fromScale(0, 0) },
-        animate: { BackgroundTransparency: 0, Position: UDim2.fromScale(0, 0) },
-        exit: { BackgroundTransparency: 1, Position: UDim2.fromScale(0, 0) },
+        animate: { BackgroundTransparency: 0, ImageTransparency: 0 },
+        exit: { BackgroundTransparency: 1, ImageTransparency: 1 },
     },
     "slide-left": {
-        initial: { BackgroundTransparency: 0, Position: UDim2.fromScale(1, 0) },
-        animate: { BackgroundTransparency: 0, Position: UDim2.fromScale(0, 0) },
-        exit: { BackgroundTransparency: 0, Position: UDim2.fromScale(-1, 0) },
+        initial: { Position: UDim2.fromScale(1, 0) },
+        animate: { Position: UDim2.fromScale(0, 0) },
+        exit: { Position: UDim2.fromScale(-1, 0) },
     },
     "slide-right": {
-        initial: { BackgroundTransparency: 0, Position: UDim2.fromScale(-1, 0) },
-        animate: { BackgroundTransparency: 0, Position: UDim2.fromScale(0, 0) },
-        exit: { BackgroundTransparency: 0, Position: UDim2.fromScale(1, 0) },
+        initial: { Position: UDim2.fromScale(-1, 0) },
+        animate: { Position: UDim2.fromScale(0, 0) },
+        exit: { Position: UDim2.fromScale(1, 0) },
     },
     "slide-up": {
-        initial: { BackgroundTransparency: 0, Position: UDim2.fromScale(0, 1) },
-        animate: { BackgroundTransparency: 0, Position: UDim2.fromScale(0, 0) },
-        exit: { BackgroundTransparency: 0, Position: UDim2.fromScale(0, -1) },
+        initial: { Position: UDim2.fromScale(0, 1) },
+        animate: { Position: UDim2.fromScale(0, 0) },
+        exit: { Position: UDim2.fromScale(0, -1) },
     },
     "slide-down": {
-        initial: { BackgroundTransparency: 0, Position: UDim2.fromScale(0, -1) },
-        animate: { BackgroundTransparency: 0, Position: UDim2.fromScale(0, 0) },
-        exit: { BackgroundTransparency: 0, Position: UDim2.fromScale(0, 1) },
+        initial: { Position: UDim2.fromScale(0, -1) },
+        animate: { Position: UDim2.fromScale(0, 0) },
+        exit: { Position: UDim2.fromScale(0, 1) },
     },
 };
 
-
 const RouterContext = createContext<RouterContextType>({
     currentPath: "/",
-    navigate: () => {},
+    navigate: () => { },
     params: new Map(),
 });
 
@@ -98,10 +109,10 @@ export const RouterProvider: React.FC<RouterProviderProps> = ({
     );
 };
 
-export const Routes: React.FC<RoutesProps> = ({ 
-    children, 
-    transition = "fade", 
-    transitionDuration = 0.3 
+export const Routes: React.FC<RoutesProps> = ({
+    children,
+    transition = "fade",
+    transitionDuration = 0.3,
 }) => {
     const childrenArray = Children.map(children, (child) => {
         if (React.isValidElement(child)) {
@@ -126,11 +137,11 @@ export const Route: React.FC<RouteProps> = ({
     transition = "fade",
     transitionDuration = 0.3,
 }) => {
-    const { currentPath } = useRouter();
+    const { currentPath, params } = useRouter();
     const [isVisible, setIsVisible] = useState(false);
     const [isAnimating, setIsAnimating] = useState(false);
 
-    const matchRoute = (
+    const matchRoute = useCallback((
         routePath: string,
         currentPath: string,
     ): { isMatch: boolean; params: Map<string, string> } => {
@@ -141,24 +152,32 @@ export const Route: React.FC<RouteProps> = ({
             return { isMatch: false, params: new Map() };
         }
 
-        const params = new Map<string, string>();
+        const newParams = new Map<string, string>();
 
         const isMatch = routeParts.every((routePart, index) => {
             const currentPart = currentParts[index];
 
             if (string.sub(routePart, 1, 1) === ":") {
                 const paramName = string.sub(routePart, 2);
-                params.set(paramName, currentPart);
+                newParams.set(paramName, currentPart);
                 return true;
             }
 
             return routePart === currentPart;
         });
 
-        return { isMatch, params };
-    };
+        return { isMatch, params: newParams };
+    }, []);
 
-    const { isMatch } = matchRoute(path, currentPath);
+    const { isMatch, params: newParams } = matchRoute(path, currentPath);
+
+    useEffect(() => {
+        if (isMatch) {
+            newParams.forEach((value, key) => {
+                params.set(key, value);
+            });
+        }
+    }, [isMatch, newParams, params]);
 
     useEffect(() => {
         if (isMatch) {
@@ -174,48 +193,63 @@ export const Route: React.FC<RouteProps> = ({
                 setIsAnimating(false);
             });
         }
-    }, [isMatch]);
+    }, [isMatch, transitionDuration]);
 
     if (!isVisible && !isAnimating) return undefined;
 
     const config = transitionConfigs[transition];
-    const currentStyle = isMatch ? config.animate : (isAnimating ? config.exit : config.initial);
-
-    const tweenInfo = new TweenInfo(transitionDuration);
+    const currentStyle = isMatch ? config.animate : config.exit;
 
     return (
         <frame
-            BackgroundTransparency={currentStyle.BackgroundTransparency}
-            Position={currentStyle.Position}
+            BackgroundTransparency={currentStyle.BackgroundTransparency || 1} // Provide default values
+            Position={currentStyle.Position || UDim2.fromScale(0, 0)}
             Size={UDim2.fromScale(1, 1)}
-            Change={{
-                Position: (rbx: Frame) => {
-                    if (currentStyle.Position) {
-                        const tween = game.GetService("TweenService").Create(
-                            rbx,
-                            tweenInfo,
-                            { Position: currentStyle.Position as UDim2 }
-                        );
-                        tween.Play();
-                    }
-                },
-                BackgroundTransparency: (rbx: Frame) => {
-                    if (currentStyle.BackgroundTransparency !== undefined) {
-                        const tween = game.GetService("TweenService").Create(
-                            rbx,
-                            tweenInfo,
-                            { BackgroundTransparency: currentStyle.BackgroundTransparency }
-                        );
-                        tween.Play();
-                    }
-                },
-            }}
         >
             <Component />
+            {isAnimating && (
+                <frame
+                    BackgroundTransparency={1}
+                    Size={UDim2.fromScale(0, 0)}
+                    Event={{
+                        AncestryChanged: (rbx: Instance) => {
+                            if (rbx.IsDescendantOf(game)) {
+                                const tweenInfo = new TweenInfo(transitionDuration);
+                                const propsToTween: Partial<WritableInstanceProperties<Frame>> = {};
+
+                                if (currentStyle.Position !== undefined) {
+                                    propsToTween.Position = currentStyle.Position;
+                                }
+
+                                if (currentStyle.BackgroundTransparency !== undefined) {
+                                    propsToTween.BackgroundTransparency = currentStyle.BackgroundTransparency;
+                                }
+
+                                // Add other properties to tween if needed
+                                if (currentStyle.ImageTransparency !== undefined) {
+                                    propsToTween.Transparency = currentStyle.ImageTransparency;
+                                }
+
+                                if (currentStyle.TextTransparency !== undefined) {
+                                    propsToTween.Transparency = currentStyle.TextTransparency;
+                                }
+
+                                const tween = game.GetService("TweenService").Create(
+                                    rbx.Parent as Frame,
+                                    tweenInfo,
+                                    propsToTween
+                                );
+                                tween.Play();
+
+                                tween.Completed.Connect(() => tween.Destroy());
+                            }
+                        },
+                    }}
+                />
+            )}
         </frame>
     );
 };
-
 
 export const Link: React.FC<LinkProps> = ({ to, children }) => {
     const { navigate } = useRouter();

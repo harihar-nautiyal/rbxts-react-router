@@ -1,21 +1,21 @@
-# @rbxtsx/react-router
+# @hn-studios/react-router
 ## A React-like Router for Roblox with Transitions
 
-**Welcome!** This is the official documentation for the `@rbxtsx/react-router` package. This package provides a routing solution for your Roblox experiences built with Roblox's TypeScript framework, RbxTs. It allows you to manage navigation between different UI components based on URL paths and includes support for animated transitions.
+**Welcome!** This is the official documentation for the `@hn-studios/react-router` package. This package provides a routing solution for your Roblox experiences built with Roblox's TypeScript framework, RbxTs. It allows you to manage navigation between different UI components based on URL paths and includes support for animated transitions.
 
 **Author:** Harihar Nautiyal
 
 **Important Configuration**
 
 1. Update tsconfig.json
-Add @rbxtsx to your typeRoots:
+Add @hn-studios to your typeRoots:
 
 ```json
 {
   "compilerOptions": {
     "typeRoots": [
       "node_modules/@rbxts",
-      "node_modules/@rbxtsx",  // Add this line
+      "node_modules/@hn-studios",  // Add this line
       "node_modules/@types"
     ]
   }
@@ -23,7 +23,7 @@ Add @rbxtsx to your typeRoots:
 ```
 
 Update default.project.json
-Add the @rbxtsx scope to your Rojo configuration:
+Add the @hn-studios scope to your Rojo configuration:
 
 ```json
 {
@@ -36,8 +36,8 @@ Add the @rbxtsx scope to your Rojo configuration:
         "@rbxts": {
           "$path": "node_modules/@rbxts"
         },
-        "@rbxtsx": {           // Add this block
-          "$path": "node_modules/@rbxtsx"
+        "@hn-studios": {           // Add this block
+          "$path": "node_modules/@hn-studios"
         }
       }
     }
@@ -48,7 +48,7 @@ Add the @rbxtsx scope to your Rojo configuration:
 **Installation:**
 
 ```bash
-npm install @rbxtsx/react-router
+npm install @hn-studios/react-router
 ```
 
 **Features:**
@@ -64,7 +64,7 @@ npm install @rbxtsx/react-router
 1.  **Import the necessary components:**
 
 ```jsx
-import { RouterProvider, Routes, Route, Link, useRouter, useParams } from "@rbxtsx/react-router";
+import { RouterProvider, Routes, Route, Link, useRouter, useParams } from "@hn-studios/react-router";
 ```
 
 2.  **Wrap your application with `RouterProvider`:**
@@ -114,7 +114,7 @@ This component allows users to navigate between routes.
 
 **Transitions:**
 
-The `@rbxtsx/react-router` package provides several built-in transition types:
+The `@hn-studios/react-router` package provides several built-in transition types:
 
 *   `fade`: Fades the new component in and the old component out.
 *   `slide-left`: Slides the new component in from the left and the old component out to the left.
