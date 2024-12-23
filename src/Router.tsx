@@ -12,11 +12,11 @@ import React, {
 
 type TransitionType = "fade" | "slide-left" | "slide-right" | "slide-up" | "slide-down";
 
-// Define a type for the properties you'll be using in your transitions
+
 interface TransitionStyle {
     BackgroundTransparency?: number;
-    ImageTransparency?: number; // If you're using images
-    TextTransparency?: number; // If you're animating text
+    ImageTransparency?: number; 
+    TextTransparency?: number; 
     Position?: UDim2;
 }
 
@@ -49,7 +49,7 @@ interface LinkProps {
     children: ReactNode;
 }
 
-// Transition configurations with explicit types
+
 const transitionConfigs: Record<TransitionType, {
     initial?: TransitionStyle;
     animate: TransitionStyle;
@@ -202,7 +202,7 @@ export const Route: React.FC<RouteProps> = ({
 
     return (
         <frame
-            BackgroundTransparency={currentStyle.BackgroundTransparency || 1} // Provide default values
+            BackgroundTransparency={currentStyle.BackgroundTransparency || 1} 
             Position={currentStyle.Position || UDim2.fromScale(0, 0)}
             Size={UDim2.fromScale(1, 1)}
         >
@@ -225,7 +225,7 @@ export const Route: React.FC<RouteProps> = ({
                                     propsToTween.BackgroundTransparency = currentStyle.BackgroundTransparency;
                                 }
 
-                                // Add other properties to tween if needed
+                                
                                 if (currentStyle.ImageTransparency !== undefined) {
                                     propsToTween.Transparency = currentStyle.ImageTransparency;
                                 }
